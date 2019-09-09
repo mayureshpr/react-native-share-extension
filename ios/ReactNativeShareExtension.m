@@ -56,12 +56,26 @@ RCT_REMAP_METHOD(data,
                  rejecter:(RCTPromiseRejectBlock)reject)
 {
     [self extractDataFromContext: extensionContext withCallback:^(NSString* val, NSString* contentType, NSException* err) {
+        CGRect screenRect = [[UIScreen mainScreen] bounds];
+        CGFloat screenWidth = screenRect.size.width;
+        CGFloat screenHeight = screenRect.size.height;
+       
+        NSString* url = [val stringByReplacingOccurrencesOfString:@"file://"  withString:@""];
+        NSNumber * mySize = [NSNumber numberWithUnsignedLongLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:url error:nil] fileSize]];
+        
+        //NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:url error:nil];
+        //NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
+        //long long fileSize = [fileSizeNumber longLongValue];
+        
         if(err) {
             reject(@"error", err.description, nil);
         } else {
             resolve(@{
                       @"type": contentType,
-                      @"value": val
+                      @"value": val,
+                      @"imageSize":mySize,
+                      @"screenHeight": [NSNumber numberWithInt: screenHeight],
+                      @"screenWidth": [NSNumber numberWithInt: screenWidth]
                       });
         }
     }];

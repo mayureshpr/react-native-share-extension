@@ -3,4 +3,5 @@
 
 @interface ReactNativeShareExtension : UIViewController<RCTBridgeModule>
 - (UIView*) shareView;
+@property (nonatomic, strong) UIWindow *window;
 @end
