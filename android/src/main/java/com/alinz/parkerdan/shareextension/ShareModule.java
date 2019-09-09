@@ -58,8 +58,11 @@ public class ShareModule extends ReactContextBaseJavaModule {
         }
         else if (Intent.ACTION_SEND.equals(action) && ("image/*".equals(type) || "image/gif".equals(type) || "image/jpeg".equals(type) || "image/png".equals(type) || "image/jpg".equals(type) ) ) {
           Uri uri = (Uri) intent.getParcelableExtra(Intent.EXTRA_STREAM);
-         value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
-
+          if(uri.toString().contains("data:image/")){
+            value = uri.toString();
+          } else {
+            value = "file://" + RealPathUtil.getRealPathFromURI(currentActivity, uri);
+          }
        } else {
          value = "";
        }
