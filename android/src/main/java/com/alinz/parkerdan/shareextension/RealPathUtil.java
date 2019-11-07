@@ -143,7 +143,7 @@ public class RealPathUtil {
         if (isGoogleOldPhotosUri(uri)) {
             // return http path, then download file.
             return uri.getLastPathSegment();
-        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri)) {
+        } else if (isGoogleNewPhotosUri(uri) || isMMSFile(uri) || isMiracleFile(uri)) {
             // copy from uri. context.getContentResolver().openInputStream(uri);
             return copyFile(context, uri);
         }
@@ -156,18 +156,21 @@ public class RealPathUtil {
   * @param uri The Uri to check.
   * @return Whether the Uri authority is Google Photos.
   */
- public static boolean isGoogleOldPhotosUri(Uri uri) {
-     return "com.google.android.apps.photos.content".equals(uri.getAuthority());
- }
+public static boolean isGoogleOldPhotosUri(Uri uri) {
+    return "com.google.android.apps.photos.content".equals(uri.getAuthority());
+}
 
- public static boolean isGoogleNewPhotosUri(Uri uri) {
+public static boolean isGoogleNewPhotosUri(Uri uri) {
     return "com.google.android.apps.photos.contentprovider".equals(uri.getAuthority());
- }
-
- public static boolean isMMSFile(Uri uri) {
+}
+public static boolean isMMSFile(Uri uri) {
     return "com.android.mms.file".equals(uri.getAuthority());
 }
 
+public static boolean isMiracleFile(Uri uri) {
+    return "com.miracle.app.rnshare.fileprovider".equals(uri.getAuthority());
+}
+ 
  private static String copyFile(Context context, Uri uri) {
 
     String filePath;
