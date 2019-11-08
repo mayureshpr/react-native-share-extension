@@ -112,13 +112,31 @@ RCT_REMAP_METHOD(data,
                 }
             }];
         } else if (imageProvider) {
-            [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+           NSMutableString *nameString = [[NSMutableString alloc]init];
+            for (NSItemProvider *itemProvider in item.attachments) {
+                if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
+                    [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                        NSURL *url = (NSURL *)item;
+                        NSString *currentName = [url absoluteString];
+                        //NSLog(@"Your url is %@", currentName);
+                        [nameString appendString:[NSString stringWithFormat:@"%@,",currentName]];
+                    }];
+                }
+            }
+            
+            double delayInSeconds = 2.5;
+            dispatch_time_t popTime = dispatch_time(DISPATCH_TIME_NOW, (int64_t)(delayInSeconds * NSEC_PER_SEC)); // 1
+            dispatch_after(popTime, dispatch_get_main_queue(), ^(void){
+                //NSLog(@"Your nameString is %@", nameString);
+                callback(nameString, [[nameString pathExtension] lowercaseString], nil);
+            });
+            
+            /*[imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSURL *url = (NSURL *)item;
-
                 if(callback) {
                     callback([url absoluteString], [[[url absoluteString] pathExtension] lowercaseString], nil);
                 }
-            }];
+            }];*/
         } else if (textProvider) {
             [textProvider loadItemForTypeIdentifier:TEXT_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                 NSString *text = (NSString *)item;
