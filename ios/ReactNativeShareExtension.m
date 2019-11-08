@@ -60,8 +60,8 @@ RCT_REMAP_METHOD(data,
         CGFloat screenWidth = screenRect.size.width;
         CGFloat screenHeight = screenRect.size.height;
        
-        NSString* url = [val stringByReplacingOccurrencesOfString:@"file://"  withString:@""];
-        NSNumber * mySize = [NSNumber numberWithUnsignedLongLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:url error:nil] fileSize]];
+        //NSString* url = [val stringByReplacingOccurrencesOfString:@"file://"  withString:@""];
+        //NSNumber * mySize = [NSNumber numberWithUnsignedLongLong:[[[NSFileManager defaultManager] attributesOfItemAtPath:url error:nil] fileSize]];
         
         //NSDictionary *fileAttributes = [[NSFileManager defaultManager] attributesOfItemAtPath:url error:nil];
         //NSNumber *fileSizeNumber = [fileAttributes objectForKey:NSFileSize];
@@ -73,7 +73,7 @@ RCT_REMAP_METHOD(data,
             resolve(@{
                       @"type": contentType,
                       @"value": val,
-                      @"imageSize":mySize,
+                      @"imageSize":@"0",
                       @"screenHeight": [NSNumber numberWithInt: screenHeight],
                       @"screenWidth": [NSNumber numberWithInt: screenWidth]
                       });
@@ -115,10 +115,10 @@ RCT_REMAP_METHOD(data,
            NSMutableString *nameString = [[NSMutableString alloc]init];
             for (NSItemProvider *itemProvider in item.attachments) {
                 if ([itemProvider hasItemConformingToTypeIdentifier:(NSString *)kUTTypeImage]) {
-                    [imageProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
+                    [itemProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                         NSURL *url = (NSURL *)item;
                         NSString *currentName = [url absoluteString];
-                        //NSLog(@"Your url is %@", currentName);
+                        NSLog(@"Your url is %@", url);
                         [nameString appendString:[NSString stringWithFormat:@"%@,",currentName]];
                     }];
                 }
