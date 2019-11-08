@@ -118,7 +118,7 @@ RCT_REMAP_METHOD(data,
                     [itemProvider loadItemForTypeIdentifier:IMAGE_IDENTIFIER options:nil completionHandler:^(id<NSSecureCoding> item, NSError *error) {
                         NSURL *url = (NSURL *)item;
                         NSString *currentName = [url absoluteString];
-                        NSLog(@"Your url is %@", url);
+                       // NSLog(@"Your url is %@", url);
                         [nameString appendString:[NSString stringWithFormat:@"%@,",currentName]];
                     }];
                 }
