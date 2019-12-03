@@ -11,10 +11,14 @@ import android.os.Environment;
 
 import java.io.BufferedOutputStream;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.UUID;
+import android.util.Base64;
+import com.facebook.common.internal.ByteStreams;
+import java.io.InputStream;
 
 public class RealPathUtil {
  public static String getRealPathFromURI(final Context context, final Uri uri) {
@@ -63,6 +67,8 @@ public class RealPathUtil {
              final String[] selectionArgs = new String[] {
                      split[1]
              };
+
+
 
              return getDataColumn(context, contentUri, selection, selectionArgs);
          }
@@ -113,6 +119,9 @@ public class RealPathUtil {
  }
 
 
+
+
+
  /**
   * @param uri The Uri to check.
   * @return Whether the Uri authority is ExternalStorageProvider.
@@ -149,7 +158,15 @@ public class RealPathUtil {
         }
     }
 
-    return getDataColumn(context, uri, null, null);
+    try {
+         final InputStream inputStream = context.getContentResolver().openInputStream(uri);
+         final byte[] bytes = ByteStreams.toByteArray(inputStream);
+         return saveImage(context, Base64.encodeToString(bytes, Base64.NO_WRAP));
+    }
+    catch (IOException e) {
+        return null;
+    }
+    //return getDataColumn(context, uri, null, null);
  }
 
  /**
@@ -170,7 +187,40 @@ public static boolean isMMSFile(Uri uri) {
 public static boolean isMiracleFile(Uri uri) {
     return "com.miracle.app.rnshare.fileprovider".equals(uri.getAuthority());
 }
- 
+
+ public static String saveImage(final Context context, final String imageData) {
+    final byte[] imgBytesData = android.util.Base64.decode(imageData,
+            android.util.Base64.DEFAULT);
+
+    //final File file = File.createTempFile("image", null, context.getCacheDir());
+    File extDir = context.getCacheDir();
+    final String file = extDir.getAbsolutePath() + "/imagecache/IMG_" + UUID.randomUUID().toString() + ".jpg";
+    final FileOutputStream fileOutputStream;
+    try {
+        fileOutputStream = new FileOutputStream(file);
+    } catch (FileNotFoundException e) {
+        e.printStackTrace();
+        return null;
+    }
+
+    final BufferedOutputStream bufferedOutputStream = new BufferedOutputStream(
+            fileOutputStream);
+    try {
+        bufferedOutputStream.write(imgBytesData);
+    } catch (IOException e) {
+        e.printStackTrace();
+        return null;
+    } finally {
+        try {
+            bufferedOutputStream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+    return file;
+}
+
+
  private static String copyFile(Context context, Uri uri) {
 
     String filePath;
@@ -179,8 +229,8 @@ public static boolean isMiracleFile(Uri uri) {
     try {
         inputStream = context.getContentResolver().openInputStream(uri);
 
-        File extDir = context.getExternalFilesDir(null);
-        filePath = extDir.getAbsolutePath() + "/IMG_" + UUID.randomUUID().toString() + ".jpg";
+        File extDir = context.getCacheDir();
+        filePath = extDir.getAbsolutePath() + "/imagecache/IMG_" + UUID.randomUUID().toString() + ".jpg";
         outStream = new BufferedOutputStream(new FileOutputStream
                 (filePath));
 
