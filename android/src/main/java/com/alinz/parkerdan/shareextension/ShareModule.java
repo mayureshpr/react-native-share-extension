@@ -32,7 +32,11 @@ public class ShareModule extends ReactContextBaseJavaModule {
 
   @ReactMethod
   public void close() {
-    getCurrentActivity().finish();
+    try {
+      getCurrentActivity().finish();
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
   }
 
   @ReactMethod
